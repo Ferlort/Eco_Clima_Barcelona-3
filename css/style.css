@@ -277,6 +277,19 @@ body.menu-open .header,
   opacity: 1 !important;
   pointer-events: auto !important;
 }
+/* While the mobile menu is open, pin the header on top of the overlay
+   so the burger (X) stays reachable to close the menu on every device. */
+body.menu-open .header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 110;
+}
+body.menu-open .burger {
+  position: relative;
+  z-index: 111;
+}
 .header__inner {
   display: flex;
   align-items: center;
