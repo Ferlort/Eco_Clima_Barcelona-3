@@ -364,41 +364,56 @@ body.menu-open .header,
 /* Hide Presupuesto CTA in header on mobile — it's inside burger menu */
 .header__cta { display: none; }
 
+/* Full-screen overlay mobile menu with 30% translucent background */
 .nav-mobile {
+  position: fixed;
+  inset: 0;
   display: flex;
   flex-direction: column;
-  gap: .5rem;
-  padding: 1rem var(--container-pad) 1.5rem;
-  background: #fff;
-  border-top: 1px solid var(--border);
+  gap: .625rem;
+  padding: calc(var(--header-h, 3.875rem) + 1.25rem) clamp(1rem, 4vw, 2rem) 2rem;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border-top: 1px solid rgba(255, 255, 255, 0.4);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   opacity: 0;
   transform: translateY(-8px);
-  transition: opacity .25s ease, transform .25s ease;
+  transition: opacity .3s ease, transform .3s ease;
+  z-index: 95; /* below header (100) so burger stays tappable */
 }
 .nav-mobile.is-open { opacity: 1; transform: translateY(0); }
 .nav-mobile[hidden] { display: none !important; }
 .nav-mobile > a {
-  padding: .875rem;
-  font-weight: 500;
+  padding: 1rem 1.125rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
   color: var(--text);
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: var(--r-sm);
-  transition: background var(--tr);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: background var(--tr), transform var(--tr);
 }
-.nav-mobile > a:hover { background: var(--bg-alt); }
+.nav-mobile > a:hover,
+.nav-mobile > a:focus-visible { background: rgba(255, 255, 255, 0.8); transform: translateX(2px); }
 .nav-mobile .nav-mobile__phone {
   display: inline-flex;
   align-items: center;
   gap: .5rem;
-  padding: .875rem;
-  font-weight: 600;
+  padding: 1rem 1.125rem;
+  font-weight: 700;
   color: var(--primary-700);
-  background: var(--primary-50);
+  background: rgba(14, 165, 233, 0.15);
+  border: 1px solid rgba(14, 165, 233, 0.3);
   border-radius: var(--r-sm);
-  margin-top: .25rem;
+  margin-top: .375rem;
 }
 .nav-mobile .btn {
   justify-content: center;
-  margin-top: .375rem;
+  margin-top: .5rem;
 }
 body.menu-open { overflow: hidden; }
 

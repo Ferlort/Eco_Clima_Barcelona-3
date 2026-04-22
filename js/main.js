@@ -13,6 +13,13 @@
   /* -------- Sticky header: scroll effect + hide-on-scroll-down -------- */
   const header = document.getElementById('header');
   if (header) {
+    /* Expose header height as CSS var so the full-screen mobile menu knows where to start */
+    const setHeaderHeight = () => {
+      document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
+    };
+    setHeaderHeight();
+    window.addEventListener('resize', setHeaderHeight);
+
     let lastScrollY = window.scrollY;
     let ticking = false;
 
