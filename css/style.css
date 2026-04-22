@@ -252,12 +252,30 @@ h1, h2, h3, h4 { font-family: inherit; }
   backdrop-filter: saturate(180%) blur(12px);
   -webkit-backdrop-filter: saturate(180%) blur(12px);
   border-bottom: 1px solid transparent;
-  transition: background var(--tr), border-color var(--tr), box-shadow var(--tr);
+  transition:
+    transform .35s cubic-bezier(.4, 0, .2, 1),
+    opacity .35s cubic-bezier(.4, 0, .2, 1),
+    background var(--tr),
+    border-color var(--tr),
+    box-shadow var(--tr);
+  will-change: transform, opacity;
 }
 .header.is-scrolled {
   background: rgba(255,255,255,.95);
   border-bottom-color: var(--border);
   box-shadow: var(--sh-sm);
+}
+.header.is-hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+/* Never hide the header when the mobile menu is open */
+body.menu-open .header,
+.header.is-locked {
+  transform: none !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 .header__inner {
   display: flex;

@@ -10,14 +10,52 @@
 (function () {
   'use strict';
 
-  /* -------- Sticky header on scroll -------- */
+  /* -------- Sticky header: scroll effect + hide-on-scroll-down -------- */
   const header = document.getElementById('header');
   if (header) {
-    const onScroll = () => {
-      if (window.scrollY > 8) header.classList.add('is-scrolled');
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+
+    const SCROLL_DELTA_MIN = 6;    /* ignore micro-scrolls */
+    const HIDE_THRESHOLD = 120;    /* don't hide until user has scrolled at least this far */
+
+    const update = () => {
+      const y = window.scrollY;
+
+      /* Translucent / scrolled background */
+      if (y > 8) header.classList.add('is-scrolled');
       else header.classList.remove('is-scrolled');
+
+      /* Direction-based show/hide (disabled while mobile menu is open) */
+      if (!document.body.classList.contains('menu-open')) {
+        const delta = y - lastScrollY;
+
+        if (Math.abs(delta) > SCROLL_DELTA_MIN) {
+          if (delta > 0 && y > HIDE_THRESHOLD) {
+            /* Scrolling down past threshold → hide */
+            header.classList.add('is-hidden');
+          } else if (delta < 0) {
+            /* Scrolling up → reveal */
+            header.classList.remove('is-hidden');
+          }
+        }
+
+        /* Near top → always show */
+        if (y < 10) header.classList.remove('is-hidden');
+      }
+
+      lastScrollY = y;
+      ticking = false;
     };
-    onScroll();
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
+    };
+
+    update();
     window.addEventListener('scroll', onScroll, { passive: true });
   }
 
@@ -36,6 +74,8 @@
 
   function openMenu() {
     if (!burger || !navMobile) return;
+    /* Ensure header is visible at current viewport top before opening menu */
+    if (header) header.classList.remove('is-hidden');
     burger.classList.add('is-open');
     burger.setAttribute('aria-expanded', 'true');
     navMobile.hidden = false;
