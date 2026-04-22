@@ -316,8 +316,10 @@ body.menu-open .burger {
   gap: 1.75rem;
   font-size: .9375rem;
   font-weight: 500;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
-.nav a { color: var(--text-soft); transition: color var(--tr); position: relative; }
+.nav a { color: var(--text-soft); transition: color var(--tr); position: relative; white-space: nowrap; }
 .nav a:hover { color: var(--primary-600); }
 .nav a::after {
   content: '';
@@ -346,7 +348,9 @@ body.menu-open .burger {
   padding: .5rem .75rem;
   border-radius: var(--r-sm);
   transition: background var(--tr);
+  white-space: nowrap;
 }
+.header__phone span { white-space: nowrap; }
 .header__phone:hover { background: var(--primary-50); color: var(--primary-700); }
 
 .burger {
@@ -1596,6 +1600,30 @@ input[type="range"]::-moz-range-thumb {
   .nav { display: inline-flex; }
   .burger { display: none !important; }
   .nav-mobile { display: none !important; }
+
+  /* Fluid header: shrink gaps/paddings/font between 960px and 1200px
+     so nav links and phone never wrap to a second line. */
+  .header__inner {
+    gap: clamp(.5rem, 1.25vw, 1rem);
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+  .nav {
+    gap: clamp(.75rem, 2vw, 1.75rem);
+    font-size: clamp(.8125rem, 1.05vw, .9375rem);
+    flex-shrink: 1;
+    min-width: 0;
+  }
+  .nav a { white-space: nowrap; }
+  .header__actions { gap: clamp(.25rem, .6vw, .5rem); flex-shrink: 0; }
+  .header__phone {
+    padding: .5rem clamp(.375rem, .65vw, .75rem);
+    font-size: clamp(.8125rem, 1.05vw, .9375rem);
+    gap: clamp(.25rem, .5vw, .5rem);
+    white-space: nowrap;
+  }
+  .header__cta { white-space: nowrap; }
+  .logo { flex-shrink: 0; }
 
   .hero__grid {
     grid-template-columns: 1.1fr .9fr;
