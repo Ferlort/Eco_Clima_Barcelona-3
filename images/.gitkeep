@@ -1,0 +1,5 @@
+# Carpeta para imágenes del proyecto.
+# Aquí puedes añadir:
+# - og-cover.jpg (1200x630) para Open Graph
+# - hero.jpg, equipos.jpg, etc.
+# Todas las imágenes deben usar loading="lazy" en el HTML.

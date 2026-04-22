@@ -1,0 +1,194 @@
+/* ===============================================
+   EcoClima Barcelona - Main JS
+   - Sticky header scroll effect
+   - Mobile menu (burger) with close on outside/ESC/resize
+   - Scroll reveal animations
+   - Form validation + submit
+   - Cookie consent
+   - Smooth scroll + scroll-to-top anchor
+   =============================================== */
+(function () {
+  'use strict';
+
+  /* -------- Sticky header on scroll -------- */
+  const header = document.getElementById('header');
+  if (header) {
+    const onScroll = () => {
+      if (window.scrollY > 8) header.classList.add('is-scrolled');
+      else header.classList.remove('is-scrolled');
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  /* -------- Mobile menu (burger) -------- */
+  const burger = document.getElementById('burger');
+  const navMobile = document.getElementById('navMobile');
+
+  function closeMenu() {
+    if (!burger || !navMobile) return;
+    burger.classList.remove('is-open');
+    burger.setAttribute('aria-expanded', 'false');
+    navMobile.classList.remove('is-open');
+    navMobile.hidden = true;
+    document.body.classList.remove('menu-open');
+  }
+
+  function openMenu() {
+    if (!burger || !navMobile) return;
+    burger.classList.add('is-open');
+    burger.setAttribute('aria-expanded', 'true');
+    navMobile.hidden = false;
+    requestAnimationFrame(() => navMobile.classList.add('is-open'));
+    document.body.classList.add('menu-open');
+  }
+
+  if (burger && navMobile) {
+    burger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (burger.classList.contains('is-open')) closeMenu();
+      else openMenu();
+    });
+
+    navMobile.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', closeMenu);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!burger.classList.contains('is-open')) return;
+      if (navMobile.contains(e.target) || burger.contains(e.target)) return;
+      closeMenu();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeMenu();
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 960) closeMenu();
+    });
+  }
+
+  /* -------- Scroll reveal (IntersectionObserver) -------- */
+  const revealEls = document.querySelectorAll('[data-reveal]');
+  if ('IntersectionObserver' in window && revealEls.length) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('is-visible'));
+  }
+
+  /* -------- Form submit -------- */
+  const form = document.getElementById('form-hero');
+  if (form) {
+    const success = form.querySelector('.form__success');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const nameField = form.querySelector('#name');
+      const phoneField = form.querySelector('#phone');
+      const messageField = form.querySelector('#message');
+
+      const name = (nameField.value || '').trim();
+      const phone = (phoneField.value || '').trim();
+      const message = (messageField.value || '').trim();
+
+      let valid = true;
+      [nameField, phoneField].forEach(f => f.parentElement.classList.remove('is-error'));
+
+      if (name.length < 2) { nameField.parentElement.classList.add('is-error'); valid = false; }
+      const phoneClean = phone.replace(/\s+/g, '');
+      if (phoneClean.length < 9 || !/^[+0-9]+$/.test(phoneClean)) {
+        phoneField.parentElement.classList.add('is-error');
+        valid = false;
+      }
+      if (!valid) {
+        const firstErr = form.querySelector('.is-error input');
+        firstErr && firstErr.focus();
+        return;
+      }
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = '.7';
+      submitBtn.textContent = 'Enviando...';
+
+      if (typeof gtag === 'function') {
+        gtag('event', 'generate_lead', {
+          event_category: 'form',
+          event_label: 'hero_form',
+          value: 1
+        });
+      }
+
+      setTimeout(() => {
+        form.querySelectorAll('.form__field, button[type="submit"], .form__legal').forEach(el => el.style.display = 'none');
+        if (success) success.hidden = false;
+      }, 700);
+    });
+  }
+
+  /* -------- Cookie consent -------- */
+  const cookieBox = document.getElementById('cookies');
+  const COOKIE_KEY = 'ecoclima_cookies_v1';
+  if (cookieBox) {
+    const stored = localStorage.getItem(COOKIE_KEY);
+    if (!stored) {
+      setTimeout(() => { cookieBox.hidden = false; }, 1200);
+    }
+    const accept = document.getElementById('cookiesAccept');
+    const reject = document.getElementById('cookiesReject');
+    accept && accept.addEventListener('click', () => {
+      localStorage.setItem(COOKIE_KEY, 'accepted');
+      cookieBox.hidden = true;
+    });
+    reject && reject.addEventListener('click', () => {
+      localStorage.setItem(COOKIE_KEY, 'rejected');
+      cookieBox.hidden = true;
+    });
+  }
+
+  /* -------- Smooth scroll for in-page links -------- */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      const href = a.getAttribute('href');
+      if (!href || href === '#' || href.length < 2) return;
+      const target = document.querySelector(href);
+      if (!target) return;
+      e.preventDefault();
+      const headerH = header ? header.offsetHeight : 0;
+      const top = target.getBoundingClientRect().top + window.scrollY - headerH - 8;
+      window.scrollTo({ top, behavior: 'smooth' });
+    });
+  });
+
+  /* -------- Lazy loading fallback -------- */
+  document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+    if (!('loading' in HTMLImageElement.prototype)) {
+      img.setAttribute('loading', 'eager');
+    }
+  });
+
+  /* -------- Scroll-to-top anchor -------- */
+  const anchorTop = document.getElementById('anchorTop');
+  if (anchorTop) {
+    const toggleAnchor = () => {
+      if (window.scrollY > 600) {
+        anchorTop.hidden = false;
+        requestAnimationFrame(() => anchorTop.classList.add('is-visible'));
+      } else {
+        anchorTop.classList.remove('is-visible');
+        setTimeout(() => { if (!anchorTop.classList.contains('is-visible')) anchorTop.hidden = true; }, 250);
+      }
+    };
+    toggleAnchor();
+    window.addEventListener('scroll', toggleAnchor, { passive: true });
+  }
+})();
