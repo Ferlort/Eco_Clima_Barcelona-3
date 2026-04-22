@@ -990,7 +990,12 @@ input[type="range"]::-moz-range-thumb {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
   gap: 1rem;
   counter-reset: step;
+  list-style: none;
+  padding-left: 0;
+  margin-left: 0;
 }
+.steps > li::marker,
+.step::marker { content: none; }
 .step {
   position: relative;
   background: #fff;
@@ -998,6 +1003,7 @@ input[type="range"]::-moz-range-thumb {
   border-radius: var(--r-lg);
   border: 1px solid var(--border);
   transition: transform var(--tr), border-color var(--tr);
+  list-style: none;
 }
 .step:hover { transform: translateY(-4px); border-color: var(--primary-300); }
 .step__num {
