@@ -119,6 +119,11 @@
   /* -------- Scroll reveal (IntersectionObserver) -------- */
   const revealEls = document.querySelectorAll('[data-reveal]');
   if ('IntersectionObserver' in window && revealEls.length) {
+    revealEls.forEach((el, idx) => {
+      const delay = (idx % 4) * 90;
+      el.style.setProperty('--reveal-delay', delay + 'ms');
+    });
+
     const io = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -126,7 +131,7 @@
           io.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold: 0.22, rootMargin: '0px 0px -10% 0px' });
     revealEls.forEach(el => io.observe(el));
   } else {
     revealEls.forEach(el => el.classList.add('is-visible'));
@@ -216,6 +221,40 @@
     });
   });
 
+  /* -------- Floating language switcher -------- */
+  const langSwitch = document.getElementById('langSwitch');
+  if (langSwitch) {
+    const langButtons = Array.from(langSwitch.querySelectorAll('.lang-switch__btn'));
+    const allowedLangs = ['es', 'ca', 'en'];
+    const i18n = window.EcoClimaI18n;
+
+    const setLang = (lang) => {
+      const nextLang = allowedLangs.includes(lang) ? lang : 'es';
+      if (i18n && typeof i18n.setLanguage === 'function') i18n.setLanguage(nextLang);
+      else {
+        document.documentElement.setAttribute('lang', nextLang);
+        document.documentElement.setAttribute('data-lang', nextLang);
+      }
+
+      langButtons.forEach((btn) => {
+        const isActive = btn.dataset.lang === nextLang;
+        btn.classList.toggle('is-active', isActive);
+        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+    };
+
+    const activeLang = i18n && typeof i18n.getLanguage === 'function'
+      ? i18n.getLanguage()
+      : (document.documentElement.getAttribute('data-lang') || 'es');
+    setLang(activeLang);
+
+    langButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        setLang(btn.dataset.lang || 'es');
+      });
+    });
+  }
+
   /* -------- Lazy loading fallback -------- */
   document.querySelectorAll('img[loading="lazy"]').forEach(img => {
     if (!('loading' in HTMLImageElement.prototype)) {
@@ -237,5 +276,52 @@
     };
     toggleAnchor();
     window.addEventListener('scroll', toggleAnchor, { passive: true });
+  }
+
+  /* -------- Zones chips marquee (desktop only) -------- */
+  const zonesChips = document.querySelector('.zones .chips--list');
+  if (zonesChips) {
+    const desktopMq = window.matchMedia('(min-width: 60rem)');
+    const originalHtml = zonesChips.innerHTML;
+
+    const enableMarquee = () => {
+      if (zonesChips.dataset.marquee === 'on') return;
+
+      const group = document.createElement('div');
+      group.className = 'chips-marquee__group';
+
+      while (zonesChips.firstChild) {
+        group.appendChild(zonesChips.firstChild);
+      }
+
+      const clone = group.cloneNode(true);
+      clone.setAttribute('aria-hidden', 'true');
+
+      const track = document.createElement('div');
+      track.className = 'chips-marquee__track';
+      track.appendChild(group);
+      track.appendChild(clone);
+
+      zonesChips.appendChild(track);
+      zonesChips.dataset.marquee = 'on';
+    };
+
+    const disableMarquee = () => {
+      if (zonesChips.dataset.marquee !== 'on') return;
+      zonesChips.innerHTML = originalHtml;
+      zonesChips.dataset.marquee = 'off';
+    };
+
+    const syncMarqueeMode = () => {
+      if (desktopMq.matches) enableMarquee();
+      else disableMarquee();
+    };
+
+    syncMarqueeMode();
+    if (typeof desktopMq.addEventListener === 'function') {
+      desktopMq.addEventListener('change', syncMarqueeMode);
+    } else if (typeof desktopMq.addListener === 'function') {
+      desktopMq.addListener(syncMarqueeMode);
+    }
   }
 })();

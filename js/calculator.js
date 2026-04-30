@@ -24,22 +24,26 @@
     units: 1
   };
 
+  const i18n = window.EcoClimaI18n;
+  const getLang = () => document.documentElement.getAttribute('data-lang') || 'es';
+  const tr = (key, fallback) => (i18n && typeof i18n.t === 'function' ? i18n.t(key, getLang()) : fallback);
+
   const BASE = {
-    instalacion:   { base: 99, label: 'Instalación' },
-    reparacion:    { base: 80, label: 'Reparación' },
-    mantenimiento: { base: 60, label: 'Mantenimiento' }
+    instalacion:   { base: 99, key: 'calc.service.install' },
+    reparacion:    { base: 80, key: 'calc.service.repair' },
+    mantenimiento: { base: 60, key: 'calc.service.maintenance' }
   };
 
   const PROPERTY_MULT = {
-    piso:    { mult: 1.0,  label: 'Piso' },
-    casa:    { mult: 1.25, label: 'Casa' },
-    oficina: { mult: 1.15, label: 'Oficina' }
+    piso:    { mult: 1.0,  key: 'calc.property.flat' },
+    casa:    { mult: 1.25, key: 'calc.property.house' },
+    oficina: { mult: 1.15, key: 'calc.property.office' }
   };
 
   const ACCESS_MULT = {
-    facil:   { mult: 1.0,  label: 'Acceso fácil' },
-    medio:   { mult: 1.15, label: 'Acceso medio' },
-    dificil: { mult: 1.35, label: 'Acceso difícil' }
+    facil:   { mult: 1.0,  key: 'calc.access.easy' },
+    medio:   { mult: 1.15, key: 'calc.access.medium' },
+    dificil: { mult: 1.35, key: 'calc.access.hard' }
   };
 
   function calculate() {
@@ -58,17 +62,37 @@
     animateNumber(priceEl, parseInt(priceEl.textContent, 10) || 0, price, 400);
 
     // breakdown
+    const unitsLabel = unitLabel(state.units);
     const items = [
-      { label: svc.label, value: `desde ${svc.base}€` },
-      { label: prop.label, value: multiplierText(prop.mult) },
-      { label: acc.label, value: multiplierText(acc.mult) },
-      { label: `${state.units} ${state.units === 1 ? 'equipo' : 'equipos'}`, value: unitFactor === 1 ? 'incluido' : `x${unitFactor.toFixed(1)}` }
+      { label: tr(svc.key, 'Instalación'), value: `${tr('price.from', 'desde')} ${svc.base}€` },
+      { label: tr(prop.key, 'Piso'), value: multiplierText(prop.mult) },
+      { label: tr(acc.key, 'Acceso fácil'), value: multiplierText(acc.mult) },
+      { label: `${state.units} ${unitsLabel}`, value: unitFactor === 1 ? includedText() : `x${unitFactor.toFixed(1)}` }
     ];
     breakdownEl.innerHTML = items.map(i => `<li><span>${i.label}</span><span>${i.value}</span></li>`).join('');
   }
 
+  function unitLabel(units) {
+    const lang = getLang();
+    if (lang === 'en') return units === 1 ? 'unit' : 'units';
+    if (lang === 'ca') return units === 1 ? 'equip' : 'equips';
+    return units === 1 ? 'equipo' : 'equipos';
+  }
+
+  function includedText() {
+    const lang = getLang();
+    if (lang === 'en') return 'included';
+    if (lang === 'ca') return 'inclòs';
+    return 'incluido';
+  }
+
   function multiplierText(m) {
-    if (m === 1) return 'estándar';
+    if (m === 1) {
+      const lang = getLang();
+      if (lang === 'en') return 'standard';
+      if (lang === 'ca') return 'estàndard';
+      return 'estándar';
+    }
     return `+${Math.round((m - 1) * 100)}%`;
   }
 
@@ -106,5 +130,6 @@
     });
   }
 
+  document.addEventListener('ecoclima:langchange', () => calculate());
   calculate();
 })();

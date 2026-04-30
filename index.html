@@ -441,7 +441,7 @@
             </div>
 
             <div class="calc__field">
-              <label for="units">Nº de equipos: <strong id="unitsVal">1</strong></label>
+              <label for="units"><span data-i18n="calc.units.label">Nº de equipos:</span> <strong id="unitsVal">1</strong></label>
               <input type="range" id="units" min="1" max="6" step="1" value="1" />
               <div class="range-ticks"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6+</span></div>
             </div>
@@ -650,11 +650,11 @@
           <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37zM17.5 6.5h.01" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
-          <a href="https://wa.me/34600000000" target="_blank" rel="noopener" aria-label="WhatsApp">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M20.52 3.48A11.78 11.78 0 0 0 12.07 0C5.55 0 .26 5.29.26 11.81c0 2.08.55 4.1 1.59 5.88L0 24l6.47-1.7a11.8 11.8 0 0 0 5.6 1.43h.01c6.52 0 11.81-5.29 11.81-11.81 0-3.16-1.23-6.13-3.37-8.44z"/></svg>
+          <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="Twitter">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M22 5.8c-.7.3-1.4.5-2.2.6.8-.5 1.4-1.2 1.7-2.1-.7.4-1.6.8-2.5.9A3.8 3.8 0 0 0 12.3 8c0 .3 0 .6.1.9-3.1-.2-5.9-1.7-7.8-4-.3.6-.5 1.2-.5 1.9 0 1.3.7 2.5 1.7 3.2-.6 0-1.2-.2-1.8-.5v.1c0 1.9 1.4 3.4 3.1 3.8-.3.1-.7.1-1 .1-.2 0-.5 0-.7-.1.5 1.5 2 2.6 3.8 2.6A7.7 7.7 0 0 1 2 18.6 10.9 10.9 0 0 0 7.9 20c7.1 0 11-5.9 11-11v-.5c.8-.5 1.4-1.1 1.9-1.7.1-.1.2-.2.2-.3z"/></svg>
           </a>
-          <a href="https://t.me/ecoclima" target="_blank" rel="noopener" aria-label="Telegram">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.96 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212-.07-.062-.174-.041-.249-.024-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.017-1.252-.25-1.865-.45-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          <a href="https://linkedin.com" target="_blank" rel="noopener" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M6.94 8.5H3.56V20h3.38V8.5zM5.25 7.05c1.08 0 1.94-.88 1.94-1.97a1.95 1.95 0 1 0-3.88 0c0 1.09.86 1.97 1.94 1.97zM20.44 20h-3.37v-5.6c0-1.34-.03-3.06-1.86-3.06-1.86 0-2.15 1.45-2.15 2.96V20H9.69V8.5h3.23v1.57h.05c.45-.85 1.55-1.75 3.2-1.75 3.42 0 4.05 2.25 4.05 5.18V20z"/></svg>
           </a>
         </div>
       </div>
@@ -702,6 +702,12 @@
 
   <!-- ========== FLOATING BUTTONS (bottom-right) ========== -->
   <div class="floaters">
+    <div class="lang-switch" id="langSwitch" role="group" aria-label="Cambiar idioma">
+      <button type="button" class="lang-switch__btn is-active" data-lang="es" aria-pressed="true">ES</button>
+      <button type="button" class="lang-switch__btn" data-lang="ca" aria-pressed="false">CA</button>
+      <button type="button" class="lang-switch__btn" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+
     <!-- Chatbot trigger (top) -->
     <button type="button" class="floater floater--chat" id="chatbotOpen" aria-label="Abrir asistente virtual">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -765,6 +771,7 @@
 
   <!-- Scripts -->
   <script src="js/countdown.js" defer></script>
+  <script src="js/i18n.js" defer></script>
   <script src="js/calculator.js" defer></script>
   <script src="js/chatbot.js" defer></script>
   <script src="js/main.js" defer></script>
