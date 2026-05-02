@@ -29,7 +29,7 @@
   const tr = (key, fallback) => (i18n && typeof i18n.t === 'function' ? i18n.t(key, getLang()) : fallback);
 
   const BASE = {
-    instalacion:   { base: 99, key: 'calc.service.install' },
+    instalacion:   { base: 199, key: 'calc.service.install' },
     reparacion:    { base: 80, key: 'calc.service.repair' },
     mantenimiento: { base: 60, key: 'calc.service.maintenance' }
   };
