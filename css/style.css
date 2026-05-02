@@ -451,24 +451,26 @@ body.menu-open { overflow: hidden; }
 }
 .hero__bg {
   position: absolute;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
   z-index: -1;
-  background:
-    radial-gradient(ellipse at 15% 0%, var(--primary-100) 0%, transparent 45%),
-    radial-gradient(ellipse at 85% 100%, #fef3c7 0%, transparent 45%),
-    linear-gradient(180deg, #fafdff 0%, #ffffff 100%);
+  pointer-events: none;
+  background-image:
+    linear-gradient(180deg, rgba(250, 253, 255, .64) 0%, rgba(255, 255, 255, .82) 100%),
+    url("../images/modern_living_room_with_visible_cool_airflow.png");
+  background-repeat: no-repeat;
+  background-position: var(--hero-bg-focus-x, 50%) center;
+  background-size: cover;
 }
 .hero__bg::before {
   content: '';
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(var(--border-soft) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border-soft) 1px, transparent 1px);
-  background-size: 40px 40px;
-  -webkit-mask-image: radial-gradient(ellipse at center, black 10%, transparent 70%);
-          mask-image: radial-gradient(ellipse at center, black 10%, transparent 70%);
-  opacity: .5;
+  background: linear-gradient(90deg, rgba(255, 255, 255, .05) 0%, rgba(255, 255, 255, .18) 50%, rgba(255, 255, 255, .05) 100%);
+  opacity: .35;
 }
 .hero__grid {
   display: grid;
@@ -571,6 +573,17 @@ body.menu-open { overflow: hidden; }
   line-height: 1.4;
 }
 .form__legal a { color: var(--primary-600); text-decoration: underline; }
+
+.form__error {
+  font-size: .8125rem;
+  color: #991b1b;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--r-md);
+  padding: .625rem .75rem;
+  margin-top: .625rem;
+  text-align: center;
+}
 
 .form__success {
   display: flex;
@@ -1635,6 +1648,15 @@ input[type="range"]::-moz-range-thumb {
 
 /* ========== RESPONSIVE ========== */
 
+/* Keep the most important part of hero image visible on narrow screens */
+@media (max-width: 47.99rem) {
+  .hero__bg { --hero-bg-focus-x: 68%; }
+}
+
+@media (max-width: 30rem) {
+  .hero__bg { --hero-bg-focus-x: 74%; }
+}
+
 /* Tablet (>=600px) */
 @media (min-width: 37.5rem) {
   .header__phone { display: inline-flex; }
@@ -1661,6 +1683,7 @@ input[type="range"]::-moz-range-thumb {
 
 /* Desktop (>=960px) */
 @media (min-width: 60rem) {
+  .hero__bg { --hero-bg-focus-x: 50%; }
   .nav { display: inline-flex; }
   .burger { display: none !important; }
   .nav-mobile { display: none !important; }

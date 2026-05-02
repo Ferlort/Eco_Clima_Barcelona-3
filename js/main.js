@@ -141,19 +141,26 @@
   const form = document.getElementById('form-hero');
   if (form) {
     const success = form.querySelector('.form__success');
+    const errorBox = form.querySelector('.form__error');
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const nameField = form.querySelector('#name');
       const phoneField = form.querySelector('#phone');
+      const distanceField = form.querySelector('#distance-meters');
+      const photoOutdoorField = form.querySelector('#photo-outdoor');
+      const photoIndoorField = form.querySelector('#photo-indoor');
       const messageField = form.querySelector('#message');
 
       const name = (nameField.value || '').trim();
       const phone = (phoneField.value || '').trim();
+      const distanceRaw = (distanceField.value || '').trim();
+      const distance = Number(distanceRaw.replace(',', '.'));
       const message = (messageField.value || '').trim();
+      if (errorBox) errorBox.hidden = true;
 
       let valid = true;
-      [nameField, phoneField].forEach(f => f.parentElement.classList.remove('is-error'));
+      [nameField, phoneField, distanceField, photoOutdoorField, photoIndoorField].forEach(f => f.parentElement.classList.remove('is-error'));
 
       if (name.length < 2) { nameField.parentElement.classList.add('is-error'); valid = false; }
       const phoneClean = phone.replace(/\s+/g, '');
@@ -161,16 +168,35 @@
         phoneField.parentElement.classList.add('is-error');
         valid = false;
       }
+      if (!Number.isFinite(distance) || distance <= 0) {
+        distanceField.parentElement.classList.add('is-error');
+        valid = false;
+      }
+      if (!photoOutdoorField.files || photoOutdoorField.files.length === 0) {
+        photoOutdoorField.parentElement.classList.add('is-error');
+        valid = false;
+      }
+      if (!photoIndoorField.files || photoIndoorField.files.length === 0) {
+        photoIndoorField.parentElement.classList.add('is-error');
+        valid = false;
+      }
       if (!valid) {
-        const firstErr = form.querySelector('.is-error input');
+        const firstErr = form.querySelector('.is-error input, .is-error textarea');
         firstErr && firstErr.focus();
         return;
       }
 
       const submitBtn = form.querySelector('button[type="submit"]');
+      const submitBtnHtml = submitBtn.innerHTML;
+      const lang = window.EcoClimaI18n?.getLanguage?.() || 'es';
+      const sendingByLang = {
+        es: 'Enviando...',
+        ca: 'Enviant...',
+        en: 'Sending...'
+      };
       submitBtn.disabled = true;
       submitBtn.style.opacity = '.7';
-      submitBtn.textContent = 'Enviando...';
+      submitBtn.textContent = sendingByLang[lang] || sendingByLang.es;
 
       if (typeof gtag === 'function') {
         gtag('event', 'generate_lead', {
@@ -180,10 +206,33 @@
         });
       }
 
-      setTimeout(() => {
+      try {
+        const formData = new FormData(form);
+        const response = await fetch('/api/lead', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          let errorText = 'No se pudo enviar la solicitud.';
+          try {
+            const payload = await response.json();
+            if (payload?.error) errorText = payload.error;
+          } catch (parseError) {
+            // Ignore parse errors and keep generic error text.
+          }
+          throw new Error(errorText);
+        }
+
         form.querySelectorAll('.form__field, button[type="submit"], .form__legal').forEach(el => el.style.display = 'none');
         if (success) success.hidden = false;
-      }, 700);
+      } catch (error) {
+        console.error('Lead submit failed:', error);
+        if (errorBox) errorBox.hidden = false;
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        submitBtn.innerHTML = submitBtnHtml;
+      }
     });
   }
 

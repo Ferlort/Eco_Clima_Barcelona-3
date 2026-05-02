@@ -15,6 +15,9 @@ Landing page de alta conversión para empresa de instalación, reparación y man
 ```
 /
 ├── index.html
+├── server.js
+├── package.json
+├── .env.example
 ├── css/
 │   └── style.css
 ├── js/
@@ -22,6 +25,7 @@ Landing page de alta conversión para empresa de instalación, reparación y man
 │   ├── calculator.js    (calculadora interactiva de precio)
 │   └── countdown.js     (cuenta atrás de oferta semanal)
 ├── images/              (añadir imágenes reales aquí)
+├── node_modules/
 └── README.md
 ```
 
@@ -92,53 +96,43 @@ Los tokens están en `:root` al inicio:
 
 ## Formulario — conexión con backend
 
-Actualmente el formulario tiene un **handler de demostración** que muestra "solicitud enviada".
+El formulario ya está conectado a `POST /api/lead` y envía:
 
-Para conectarlo a un backend real, edita `js/main.js`, busca el bloque `form.addEventListener('submit', ...)` y reemplaza el `setTimeout` por:
+- Nombre
+- Teléfono
+- Distancia estimada en metros entre unidad exterior/interior
+- Mensaje opcional
+- 2 fotos obligatorias (ubicación unidad exterior e interior)
 
-```js
-fetch('/api/lead', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ name, phone, message })
-})
-.then(r => r.json())
-.then(() => { /* mostrar éxito */ })
-.catch(() => { /* manejar error */ });
+### Canales soportados
+
+El backend `server.js` puede enviar automáticamente a:
+
+- **Telegram** (mensaje + 2 fotos)
+- **WhatsApp Cloud API** (mensaje + 2 fotos)
+- **Email SMTP** (texto + adjuntos)
+- **CRM webhook** (JSON)
+
+### Configuración
+
+1. Copia `.env.example` a `.env`.
+2. Rellena al menos Telegram:
+   - `TELEGRAM_BOT_TOKEN`
+   - `TELEGRAM_CHAT_ID`
+3. (Opcional) Configura WhatsApp Cloud API:
+   - `WHATSAPP_ACCESS_TOKEN`
+   - `WHATSAPP_PHONE_NUMBER_ID`
+   - `WHATSAPP_TO_NUMBER` (con prefijo de país, ejemplo `34600111222`)
+4. (Opcional) Configura SMTP y/o CRM webhook.
+
+### Ejecutar en local
+
+```bash
+npm install
+npm run dev
 ```
 
-### Backend mínimo (Node.js + Express)
-
-Si necesitas un backend rápido, ejemplo con Express + Nodemailer:
-
-```js
-// server.js
-const express = require('express');
-const nodemailer = require('nodemailer');
-const app = express();
-app.use(express.json());
-app.use(express.static('.'));
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: { user: process.env.MAIL_USER, pass: process.env.MAIL_PASS }
-});
-
-app.post('/api/lead', async (req, res) => {
-  const { name, phone, message } = req.body;
-  await transporter.sendMail({
-    from: '"EcoClima Web" <no-reply@ecoclima.es>',
-    to: 'info@ecoclima-barcelona.es',
-    subject: 'Nueva solicitud web',
-    text: `Nombre: ${name}\nTel: ${phone}\n${message}`
-  });
-  res.json({ ok: true });
-});
-
-app.listen(3000);
-```
-
-Alternativas sin código: **Formspree**, **Getform**, **Netlify Forms**.
+Abre [http://localhost:3000](http://localhost:3000).
 
 ## Rendimiento
 
