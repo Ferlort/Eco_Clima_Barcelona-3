@@ -263,13 +263,9 @@ app.post(
       if (!phone || phone.replace(/\s+/g, '').length < 9) {
         return res.status(400).json({ ok: false, error: 'Teléfono inválido.' });
       }
-      if (!distanceMeters || Number(distanceMeters.replace(',', '.')) <= 0) {
+      if (distanceMeters && Number(distanceMeters.replace(',', '.')) <= 0) {
         return res.status(400).json({ ok: false, error: 'Distancia inválida.' });
       }
-      if (!files.photoOutdoor || !files.photoIndoor) {
-        return res.status(400).json({ ok: false, error: 'Se requieren ambas fotos.' });
-      }
-
       const lead = { name, phone, distanceMeters, message };
 
       await Promise.all([

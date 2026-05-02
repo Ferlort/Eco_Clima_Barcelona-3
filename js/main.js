@@ -168,16 +168,8 @@
         phoneField.parentElement.classList.add('is-error');
         valid = false;
       }
-      if (!Number.isFinite(distance) || distance <= 0) {
+      if (distanceRaw && (!Number.isFinite(distance) || distance <= 0)) {
         distanceField.parentElement.classList.add('is-error');
-        valid = false;
-      }
-      if (!photoOutdoorField.files || photoOutdoorField.files.length === 0) {
-        photoOutdoorField.parentElement.classList.add('is-error');
-        valid = false;
-      }
-      if (!photoIndoorField.files || photoIndoorField.files.length === 0) {
-        photoIndoorField.parentElement.classList.add('is-error');
         valid = false;
       }
       if (!valid) {
